@@ -1,16 +1,17 @@
 import os
-import pyaes
+import Cryptodome.Cipher.AES as AES
 
 ## abrir o arquivo criptografado
 file_name = "teste.txt.ransomwaretroll"
 file = open(file_name, "rb")
-file_data = file.read()
+nonce, tag, ciphertext = [ file.read(x) for x in (16, 16, -1) ]
 file.close()
 
 ## chave para descriptografia
-key = b"testeransomwares"
-aes = pyaes.AESModeOfOperationCTR(key)
-decrypt_data = aes.decrypt(file_data)
+key = b"chave_secreta_cr"
+cipher = AES.new(key,AES.MODE_EAX,nonce)
+
+decrypt_data = cipher.decrypt_and_verify(ciphertext,tag)
 
 ## remover o arquivo criptografado
 os.remove(file_name)
